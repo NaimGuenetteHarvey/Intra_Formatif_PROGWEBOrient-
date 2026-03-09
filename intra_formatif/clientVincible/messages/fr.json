@@ -1,8 +1,8 @@
 {
     "favorites":{
         "title":"Personnages favoris",
-        "language":"English",
-        "name":"Nom : NOM DU PERSONNAGE",
+        "language":"Français",
+        "name":"Nom",
         "empty":"Vider les favoris"
     }
 }

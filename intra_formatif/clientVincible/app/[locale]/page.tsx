@@ -4,19 +4,27 @@ import { useState } from "react";
 import { Character } from "../_types/character";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 export default function Home() {
 
   const [character, setCharacter] = useState<Character | null>();
-  
+  const [name, setName] = useState<string> ("");
+  const [errorMessage, setErrorMessage] = useState("");
 
   async function getCharacter(){
-      const response = await axios.get("http://localhost:5254/api/Characters/GetCharacterByName/"+character?.name)
+    try{const response = await axios.get("http://localhost:5254/api/Characters/GetCharacterByName/"+ name)
       console.log(response.data);
 
     // Personnage hardcodé si vous n'arrivez pas à compléter la fonction. NE SUPPRIMEZ PAS CETTE LIGNE DE CODE TROP VITE !
-    setCharacter(new Character("Dupli-Kate", null, ["Réplication"], "http://localhost:5254/api/Characters/GetPicture/6", true));
+    setCharacter(new Character(response.data.name,response.data.age,response.data.superpowers,response.data.imageUrl,response.data.isAlive));
+    setErrorMessage("");
+  }
     
+    catch(error){
+      console.log(error);
+      setErrorMessage("Ce bonhomme n'existe pas.");
+    }
   }
 
   function addToFavs() {
@@ -34,8 +42,9 @@ export default function Home() {
 
       <p className="mb-2">Exemples : Invincible, Atom Eve, Omni-Man, Allen the Alien, Dupli-Kate, etc.</p>
 
-      <Input type="text" placeholder="Nom du personnage" className="w-xs mr-2 bg-white" />
+      <Input type="text" placeholder="Nom du personnage" value={name} onChange={(e) => setName(e.target.value)} className="w-xs mr-2 bg-white" />
       <Button variant="outline" className="cursor-pointer" onClick={getCharacter}>Rechercher</Button>
+      <p className="error">{errorMessage}</p>
 
       {character &&
         <div>
@@ -48,9 +57,9 @@ export default function Home() {
               <p>Nom : {character.name}</p>
               <p>Âge : {character.age == null ? "Inconnu" : character.age}</p>
               <p>Statut : {character.isAlive ? 'En vie' : 'Vaincu(e)'}</p>
-              <p className="my-1">Pouvoir(s) : </p>
+              <p className="my-1">Powers :</p>
               <ul>
-                {character.powers.map(p => <li key={p}>{p}</li>)}
+                {character.powers.map(p => <Link href={`/superpowers/${p}`} key={p}><li>{p}</li></Link>)}
               </ul>
               <Button onClick={addToFavs} className="cursor-pointer mt-2">⭐ Ajouter aux favoris</Button>
             </div >

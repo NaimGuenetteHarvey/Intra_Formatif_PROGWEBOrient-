@@ -3,33 +3,43 @@
 import { useState } from "react";
 import { Character } from "../../_types/character";
 import { Button } from "@/components/ui/button";
-
+import { useLocale, useTranslations } from "next-intl";
+import { usePathname, useRouter } from "@/i18n/navigation";
 export default function Favorites() {
-
-    const [favorites, setFavorites] = useState<Character[]>([
-		new Character("Atom Eve", 19, ["Manipulation de la matière"], "http://localhost:5254/api/Characters/GetPicture/2", true),
-        new Character("Rex Splode", null, ["Charge cinétique"], "http://localhost:5254/api/Characters/GetPicture/7", false)
-	]);
+ const locale = useLocale();
+ const router = useRouter();
+   const [selectLocale, setSelectLocale] = useState(locale);
+ const pathname = usePathname();
+    const t = useTranslations('favorites');
+    const [favorites, setFavorites] = useState<Character[]>([]);
 
     function emptyFavs() {
+      
 
     }
+      function chooseLocale(e : any){
+    setSelectLocale(e.target.value); // On met l'état à jour
+    router.replace(pathname, { locale : e.target.value }); // On change la locale dans la route
+  }
 
     return (
         <div>
-            <h2 className="text-xl my-2 font-bold">Personnages favoris</h2>
-
+            <h2 className="text-xl my-2 font-bold">{t('title')}</h2>
+             <select onChange={chooseLocale} value={selectLocale}>
+              <option value="fr">Français</option>
+              <option value="en">English</option>
+             </select>
             <div className="row gap-2 flex-wrap">
                 {favorites.map((f,index) =>
                     <div key={index}>
                         <img src={f.imageUrl} alt={f.name} />
-                        <p>Nom : {f.name}</p>
+                        <p>{t('name')} : {f.name}</p>
                         <hr className="my-1" />
                     </div>
                 )}
             </div>
 
-            <Button onClick={emptyFavs} className="cursor-pointer">Vider les favoris</Button>
+            <Button onClick={emptyFavs} className="cursor-pointer">{t('empty')}</Button>
         </div>
     );
 
