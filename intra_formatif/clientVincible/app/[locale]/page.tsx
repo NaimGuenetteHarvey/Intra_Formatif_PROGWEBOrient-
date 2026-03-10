@@ -33,7 +33,14 @@ export default function Home() {
     alert(character.name + " ajouté(e) aux favoris !");
 
     // À compléter
-
+    let tab = [];
+    let storage = localStorage.getItem("character");
+    if (storage != null)
+    {
+      tab = JSON.parse(storage)
+    }
+    tab.push(character);
+    localStorage.setItem("character", JSON.stringify(tab));
   }
 
   return (
